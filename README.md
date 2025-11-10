@@ -9,8 +9,9 @@ The project is divided into two parts: the off-chain program and the on-chain pr
 If you want to maximize your ORE to unclaimed ORE conversion rate, you need to deploy sol at the squares of the best EV. Calculating EV and deploying square to the optimal EV is a complex process. ORE REFINED will do it for you.
 
 ### Fee
-0.5% of the deploy amount.
-(Compared with random deployment or uniform deployment to all squares, the increase in EV is far greater than the fee)
+0.5% of the deploy amount. All the fees will be used to purchase ORE or converted to unclaimed ORE. Unlocked until January 1, 2027.1
+
+Compared with random deployment or uniform deployment to all squares, the increase in EV is far greater than the fee
 ![img.png](img.png)
 The miner "iore" with the highest conversion rate was created by me
 
