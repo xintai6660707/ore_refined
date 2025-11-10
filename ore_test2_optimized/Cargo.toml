@@ -57,6 +57,10 @@ rand = "0.8.5"
 futures-util = "0.3.31"
 tokio-tungstenite = "0.20.1"
 
+# OpenSSL - Windows 编译支持
+# 使用 vendored 特性自动编译 OpenSSL，解决 Windows 依赖问题
+openssl = { version = "0.10", features = ["vendored"] }
+
 [patch.crates-io]
 meteora-pools-sdk = { git = "https://github.com/regolith-labs/meteora-pools-sdk", branch = "master" }
 meteora-vault-sdk = { git = "https://github.com/regolith-labs/meteora-vault-sdk", branch = "master" }
