@@ -1,0 +1,108 @@
+{
+  "address": "HZJfY7oVkbWxsmMQX5ipqahMnC74H72UYaBXJ8an2PoR",
+  "metadata": {
+    "name": "ore_por_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "refined",
+      "discriminator": [
+        63,
+        24,
+        160,
+        231,
+        240,
+        209,
+        92,
+        51
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "authority",
+          "writable": true
+        },
+        {
+          "name": "automation",
+          "writable": true
+        },
+        {
+          "name": "board",
+          "writable": true
+        },
+        {
+          "name": "miner",
+          "writable": true
+        },
+        {
+          "name": "round",
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "writable": true
+        },
+        {
+          "name": "system_program"
+        },
+        {
+          "name": "ore_program"
+        },
+        {
+          "name": "fee",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "ore_price",
+          "type": "f64"
+        },
+        {
+          "name": "sol_price",
+          "type": "f64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "remaining_slots",
+          "type": "u8"
+        },
+        {
+          "name": "ore_refined_rate",
+          "type": "f64"
+        },
+        {
+          "name": "req_id",
+          "type": "u8"
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidSlot",
+      "msg": "The current slot does not meet the requirements."
+    },
+    {
+      "code": 6001,
+      "name": "AlreadyDeploy",
+      "msg": "Deployment has already been completed and cannot be repeated."
+    },
+    {
+      "code": 6002,
+      "name": "NoSquareDeploy",
+      "msg": "No qualifying square to deploy."
+    }
+  ]
+}
