@@ -1,5 +1,5 @@
 use bincode::serialize;
-use rand::seq::SliceRandom;
+use rand::{seq::SliceRandom, Rng};
 use serde::{de, Deserialize};
 use serde_json::{json, Value};
 use solana_client::client_error::reqwest;

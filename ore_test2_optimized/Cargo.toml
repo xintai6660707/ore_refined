@@ -18,10 +18,8 @@ solana-transaction-status = "3.0.3"
 spl-token = { version = "^4", features = ["no-entrypoint"] }
 spl-associated-token-account = { version = "^6", features = ["no-entrypoint"] }
 
-# ORE API (需要本地路径或 git 依赖)
-# 请根据实际情况调整路径
-# ore-api = { path = "../ore/api" }
-# 或者使用你的实际依赖方式
+# ORE API - 使用 Git 仓库
+ore-api = { git = "https://github.com/regolith-labs/ore", branch = "master" }
 
 # Meteora SDK
 meteora-pools-sdk = "0.1"

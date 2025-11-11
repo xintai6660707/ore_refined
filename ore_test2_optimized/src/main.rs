@@ -13,9 +13,8 @@ use solana_sdk::{
     compute_budget::ComputeBudgetInstruction,
     message::{v0, VersionedMessage},
     native_token::lamports_to_sol,
-    pubkey::Pubkey,
     signature::{read_keypair_file, Keypair, Signer},
-    transaction::{Transaction, VersionedTransaction},
+    transaction::VersionedTransaction,
 };
 use spl_token::amount_to_ui_amount;
 use std::sync::Arc;
@@ -30,11 +29,11 @@ const DEFAULT_UNITS: u64 = 400_000;
 #[command(about = "基于 ore_refined 设计思路优化的 ORE 挖矿程序", long_about = None)]
 struct Cli {
     /// RPC 地址
-    #[arg(long, env = "RPC")]
+    #[arg(long)]
     rpc: String,
 
     /// Keypair 文件路径
-    #[arg(long, env = "KEYPAIR")]
+    #[arg(long)]
     keypair: String,
 
     /// 子命令

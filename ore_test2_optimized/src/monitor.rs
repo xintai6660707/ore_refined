@@ -1,7 +1,7 @@
 use crate::utils::{get_board, get_clock, get_miner, get_round};
 use ore_api::prelude::{Board, Miner, Round};
 use solana_client::nonblocking::rpc_client::RpcClient;
-use solana_sdk::{pubkey::Pubkey, signature::Keypair};
+use solana_sdk::signature::{Keypair, Signer};
 use std::sync::Arc;
 use steel::Clock;
 use tokio::sync::Mutex;
