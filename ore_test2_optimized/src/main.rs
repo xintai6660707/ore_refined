@@ -12,7 +12,6 @@ use solana_sdk::{
     commitment_config::CommitmentConfig,
     compute_budget::ComputeBudgetInstruction,
     message::{v0, VersionedMessage},
-    native_token::lamports_to_sol,
     signature::{read_keypair_file, Keypair, Signer},
     transaction::VersionedTransaction,
 };
@@ -117,7 +116,10 @@ async fn main() -> Result<(), anyhow::Error> {
     let cli = Cli::parse();
 
     // 读取 keypair
-    let payer = Arc::new(read_keypair_file(&cli.keypair)?);
+    let payer = Arc::new(
+        read_keypair_file(&cli.keypair)
+            .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+    );
     info!("钱包地址: {}", payer.pubkey());
 
     // 创建 RPC 客户端（使用 processed 获得最快响应）
@@ -225,7 +227,6 @@ async fn auto_mine_optimized(
     Monitor::start_all(rpc.clone(), payer.clone(), monitor.clone()).await?;
 
     let mut last_round_id = 0u64;
-    let mut round_count = 0;
 
     // 获取初始价格
     let (ore_price, sol_price) = get_price_with_retry(3).await?;
@@ -238,7 +239,6 @@ async fn auto_mine_optimized(
         // 检测新轮次
         if snapshot.board.round_id != last_round_id {
             last_round_id = snapshot.board.round_id;
-            round_count += 1;
 
             info!("🆕 新轮次 #{}", snapshot.board.round_id);
             snapshot.log_status();

@@ -10,14 +10,18 @@ use solana_client::{
 use solana_sdk::{
     commitment_config::CommitmentConfig,
     compute_budget::ComputeBudgetInstruction,
-    native_token::lamports_to_sol,
     pubkey::Pubkey,
     signature::{Keypair, Signer},
     transaction::Transaction,
 };
 use spl_token::amount_to_ui_amount;
-use steel::{AccountDeserialize, Clock, Discriminator};
+use steel::{AccountDeserialize, Clock, Discriminator, Numeric};
 use tracing::info;
+
+/// 将 lamports 转换为 SOL（替代已弃用的 lamports_to_sol）
+pub fn lamports_to_sol(lamports: u64) -> f64 {
+    lamports as f64 / 1_000_000_000.0
+}
 
 /// 获取 Board 账户（棋盘状态）
 pub async fn get_board(rpc: &RpcClient) -> Result<Board, anyhow::Error> {
@@ -264,8 +268,8 @@ pub async fn log_balance(
     // 计算累计奖励
     if treasury.miner_rewards_factor > miner.rewards_factor {
         let accumulated_rewards = treasury.miner_rewards_factor - miner.rewards_factor;
-        if accumulated_rewards >= ore_api::prelude::Numeric::ZERO {
-            let personal_rewards = accumulated_rewards * ore_api::prelude::Numeric::from_u64(miner.rewards_ore);
+        if accumulated_rewards >= Numeric::ZERO {
+            let personal_rewards = accumulated_rewards * Numeric::from_u64(miner.rewards_ore);
             miner.refined_ore += personal_rewards.to_u64();
         }
     }
