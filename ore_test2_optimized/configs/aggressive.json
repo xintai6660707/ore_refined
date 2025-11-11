@@ -1,0 +1,26 @@
+{
+  "common": {
+    "rpc": "https://api.mainnet-beta.solana.com",
+    "keypair": "~/.config/solana/id.json",
+    "timing": {
+      "start_before_seconds": 35.0,
+      "remaining_slots": 12
+    }
+  },
+  "strategy": {
+    "type": "dynamic_optimized",
+    "amount_sol": 0.02,
+    "min_squares": 10,
+    "pick_squares": 7,
+    "dynamic_coefficient": 0.05,
+    "dynamic_offset": -0.002
+  },
+  "advanced": {
+    "compute_unit_price": 30000,
+    "compute_unit_limit": 400000,
+    "jito_tip": 10000,
+    "enable_jito": true,
+    "max_retries": 5,
+    "log_level": "info"
+  }
+}
