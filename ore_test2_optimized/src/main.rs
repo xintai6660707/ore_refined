@@ -1,3 +1,4 @@
+mod config;
 mod jito;
 mod monitor;
 mod price;
@@ -27,14 +28,6 @@ const DEFAULT_UNITS: u64 = 400_000;
 #[command(name = "ORE Test2 Optimized")]
 #[command(about = "基于 ore_refined 设计思路优化的 ORE 挖矿程序", long_about = None)]
 struct Cli {
-    /// RPC 地址
-    #[arg(long)]
-    rpc: String,
-
-    /// Keypair 文件路径
-    #[arg(long)]
-    keypair: String,
-
     /// 子命令
     #[command(subcommand)]
     command: Commands,
@@ -42,8 +35,24 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// 使用配置文件运行（推荐）
+    Run {
+        /// 配置文件路径
+        #[arg(long, short)]
+        config: String,
+    },
+
     /// 自动挖矿（阈值算法）
     AutoThreshold {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+
+
         /// 每个格子部署的 SOL 数量
         #[arg(long, default_value = "0.01")]
         amount_sol: f64,
@@ -71,6 +80,14 @@ enum Commands {
 
     /// 自动挖矿（最优化算法）
     AutoOptimized {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+
         /// 每个格子部署的 SOL 数量
         #[arg(long, default_value = "0.01")]
         amount_sol: f64,
@@ -93,19 +110,55 @@ enum Commands {
     },
 
     /// 查看余额
-    Balance,
+    Balance {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+    },
 
     /// 领取奖励
-    Claim,
+    Claim {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+    },
 
     /// 查看当前状态
-    Status,
+    Status {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+    },
 
     /// 查看 Board
-    Board,
+    Board {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+    },
 
     /// 查看 Miner
-    Miner,
+    Miner {
+        /// RPC 地址
+        #[arg(long)]
+        rpc: String,
+
+        /// Keypair 文件路径
+        #[arg(long)]
+        keypair: String,
+    },
 }
 
 #[tokio::main]
@@ -115,22 +168,14 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let cli = Cli::parse();
 
-    // 读取 keypair
-    let payer = Arc::new(
-        read_keypair_file(&cli.keypair)
-            .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
-    );
-    info!("钱包地址: {}", payer.pubkey());
-
-    // 创建 RPC 客户端（使用 processed 获得最快响应）
-    let rpc = Arc::new(RpcClient::new_with_commitment(
-        cli.rpc.clone(),
-        CommitmentConfig::processed(),
-    ));
-
     // 执行命令
     match cli.command {
+        Commands::Run { config } => {
+            run_with_config(&config).await?;
+        }
         Commands::AutoThreshold {
+            rpc,
+            keypair,
             amount_sol,
             threshold_sol,
             min_squares,
@@ -138,6 +183,17 @@ async fn main() -> Result<(), anyhow::Error> {
             start_before_seconds,
             remaining_slots,
         } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            info!("钱包地址: {}", payer.pubkey());
+
+            let rpc = Arc::new(RpcClient::new_with_commitment(
+                rpc,
+                CommitmentConfig::processed(),
+            ));
+
             auto_mine_optimized(
                 rpc,
                 payer,
@@ -153,12 +209,25 @@ async fn main() -> Result<(), anyhow::Error> {
             .await?;
         }
         Commands::AutoOptimized {
+            rpc,
+            keypair,
             amount_sol,
             min_squares,
             pick_squares,
             start_before_seconds,
             remaining_slots,
         } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            info!("钱包地址: {}", payer.pubkey());
+
+            let rpc = Arc::new(RpcClient::new_with_commitment(
+                rpc,
+                CommitmentConfig::processed(),
+            ));
+
             auto_mine_optimized(
                 rpc,
                 payer,
@@ -172,20 +241,101 @@ async fn main() -> Result<(), anyhow::Error> {
             )
             .await?;
         }
-        Commands::Balance => {
+        Commands::Balance { rpc, keypair } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            let rpc = Arc::new(RpcClient::new_with_commitment(
+                rpc,
+                CommitmentConfig::processed(),
+            ));
             log_balance(&rpc, &payer).await?;
         }
-        Commands::Claim => {
+        Commands::Claim { rpc, keypair } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            let rpc = RpcClient::new_with_commitment(rpc, CommitmentConfig::processed());
             claim(&rpc, &payer).await?;
         }
-        Commands::Status => {
+        Commands::Status { rpc, keypair } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            let rpc = RpcClient::new_with_commitment(rpc, CommitmentConfig::processed());
             show_status(&rpc, &payer).await?;
         }
-        Commands::Board => {
+        Commands::Board { rpc } => {
+            let rpc = RpcClient::new_with_commitment(rpc, CommitmentConfig::processed());
             log_board(&rpc).await?;
         }
-        Commands::Miner => {
+        Commands::Miner { rpc, keypair } => {
+            let payer = Arc::new(
+                read_keypair_file(&keypair)
+                    .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+            );
+            let rpc = RpcClient::new_with_commitment(rpc, CommitmentConfig::processed());
             log_miner(&rpc, &payer).await?;
+        }
+    }
+
+    Ok(())
+}
+
+/// 使用配置文件运行
+async fn run_with_config(config_path: &str) -> Result<(), anyhow::Error> {
+    // 加载配置文件
+    let config = config::Config::from_file(config_path)?;
+
+    // 打印配置摘要
+    config.print_summary();
+
+    // 读取 keypair
+    let payer = Arc::new(
+        read_keypair_file(&config.common.keypair)
+            .map_err(|e| anyhow::anyhow!("Failed to read keypair file: {}", e))?
+    );
+    info!("钱包地址: {}", payer.pubkey());
+
+    // 创建 RPC 客户端
+    let rpc = Arc::new(RpcClient::new_with_commitment(
+        config.common.rpc.clone(),
+        CommitmentConfig::processed(),
+    ));
+
+    // 根据策略执行挖矿
+    match config.strategy {
+        config::StrategyConfig::FixedThreshold { params } => {
+            auto_mine_optimized(
+                rpc,
+                payer,
+                MiningStrategy::Threshold {
+                    threshold_sol: params.threshold_sol,
+                    amount_sol: params.amount_sol,
+                    min_squares: params.min_squares,
+                    pick_squares: params.pick_squares,
+                    start_before_seconds: config.common.timing.start_before_seconds,
+                    remaining_slots: config.common.timing.remaining_slots,
+                },
+            )
+            .await?;
+        }
+        config::StrategyConfig::DynamicOptimized { params } => {
+            auto_mine_optimized(
+                rpc,
+                payer,
+                MiningStrategy::Optimized {
+                    amount_sol: params.amount_sol,
+                    min_squares: params.min_squares,
+                    pick_squares: params.pick_squares,
+                    start_before_seconds: config.common.timing.start_before_seconds,
+                    remaining_slots: config.common.timing.remaining_slots,
+                },
+            )
+            .await?;
         }
     }
 

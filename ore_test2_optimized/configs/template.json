@@ -1,0 +1,25 @@
+{
+  "common": {
+    "rpc": "YOUR_RPC_URL_HERE",
+    "keypair": "PATH_TO_YOUR_KEYPAIR",
+    "timing": {
+      "start_before_seconds": 40.0,
+      "remaining_slots": 15
+    }
+  },
+  "strategy": {
+    "type": "fixed_threshold",
+    "threshold_sol": 0.01,
+    "amount_sol": 0.01,
+    "min_squares": 12,
+    "pick_squares": 5
+  },
+  "advanced": {
+    "compute_unit_price": 20000,
+    "compute_unit_limit": 400000,
+    "jito_tip": 5000,
+    "enable_jito": true,
+    "max_retries": 4,
+    "log_level": "info"
+  }
+}
