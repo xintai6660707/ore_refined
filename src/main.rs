@@ -135,6 +135,7 @@ async fn on_chain_main(
 
     let mut last_round_id = 0_u64;
     let mut req_id = 0;
+    let (mut ore_price,mut sol_price) = get_price().await?;
 
     loop {
         req_id += 1;
@@ -145,7 +146,6 @@ async fn on_chain_main(
         let clock = clock_mutex.lock().await.clone();
         let miner = miner_mutex.lock().await.clone();
         let round_id = board.round_id;
-        let (mut ore_price,mut sol_price) = get_price().await?;
 
 
         if last_round_id != round_id {
